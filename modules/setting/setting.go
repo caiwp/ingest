@@ -12,6 +12,7 @@ import (
     "path/filepath"
     "strings"
     "github.com/Shopify/sarama"
+    "github.com/caiwp/ingest/models"
 )
 
 var (
@@ -25,6 +26,10 @@ var (
     LogRootPath string
     LogModes    []string
     LogConfigs  []string
+
+    // Data settings
+    DataRootPath string
+    SourceDataPath string
 )
 
 func init() {
@@ -80,11 +85,15 @@ func NewContext() {
     }
     Cfg.NameMapper = ini.AllCapsUnderscore
     LogRootPath = Cfg.Section("").Key("ROOT_PATH").MustString(path.Join(workDir, "log"))
+
+    DataRootPath = Cfg.Section("").Key("DATA_PATH").MustString(path.Join(workDir, "data"))
+    SourceDataPath = path.Join(DataRootPath, "source")
 }
 
 func NewServices() {
     newLogService()
     newKafkaService()
+    newModelService()
     // newImpalaService()
 }
 
@@ -229,4 +238,13 @@ func newKafkaService() {
 
 func closeKafkaService() {
     Producer.Close()
+}
+
+func newModelService() {
+    categories := strings.Split(Cfg.Section("model").Key("CATEGORY").MustString("login"), ",")
+
+    for _, v := range categories {
+        category := strings.TrimSpace(v)
+        models.Run(category)
+    }
 }

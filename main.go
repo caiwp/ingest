@@ -4,7 +4,6 @@ import (
     "github.com/caiwp/ingest/modules/setting"
     "time"
     "code.gitea.io/gitea/modules/log"
-    "github.com/caiwp/ingest/modules/kafka"
 )
 
 func main() {
@@ -15,11 +14,13 @@ func main() {
         setting.CloseServices()
     }()
 
+    /*
     s := "hello world"
     err := kafka.SendMassage(s)
     if err != nil {
         log.Error(4, "send massage failed: %v", err)
     }
+    */
 }
 
 func GlobalInit() {
