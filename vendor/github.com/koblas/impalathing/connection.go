@@ -2,9 +2,10 @@ package impalathing
 
 import (
 	"fmt"
+
 	"git.apache.org/thrift.git/lib/go/thrift"
-	impala "github.com/koblas/impalathing/services/impalaservice"
 	"github.com/koblas/impalathing/services/beeswax"
+	impala "github.com/koblas/impalathing/services/impalaservice"
 )
 
 type Options struct {
@@ -17,10 +18,10 @@ var (
 )
 
 type Connection struct {
-	client  *impala.ImpalaServiceClient
-	handle  *beeswax.QueryHandle
-    transport thrift.TTransport
-	options Options
+	client    *impala.ImpalaServiceClient
+	handle    *beeswax.QueryHandle
+	transport thrift.TTransport
+	options   Options
 }
 
 func Connect(host string, port int, options Options) (*Connection, error) {
@@ -59,7 +60,7 @@ func (c *Connection) Close() error {
 		}
 
 		c.transport.Close()
-        c.client = nil
+		c.client = nil
 	}
 	return nil
 }

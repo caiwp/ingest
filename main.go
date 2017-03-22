@@ -1,29 +1,41 @@
 package main
 
 import (
-    "github.com/caiwp/ingest/modules/setting"
-    "time"
-    "code.gitea.io/gitea/modules/log"
+	"os"
+	"time"
+
+	"code.gitea.io/gitea/modules/log"
+	"github.com/caiwp/ingest/cmd"
+	"github.com/caiwp/ingest/modules/setting"
+	"github.com/urfave/cli"
 )
 
+var Version = "0.1.0+dev"
+
 func main() {
-    GlobalInit()
-    t0 := time.Now()
-    defer func() {
-        log.Warn("End time duration: %.4fs", time.Since(t0).Seconds())
-        setting.CloseServices()
-    }()
+	var t = time.Now()
 
-    /*
-    s := "hello world"
-    err := kafka.SendMassage(s)
-    if err != nil {
-        log.Error(4, "send massage failed: %v", err)
-    }
-    */
-}
-
-func GlobalInit() {
-    setting.NewContext()
-    setting.NewServices()
+	app := cli.NewApp()
+	app.Name = "Ingest"
+	app.Usage = "数据流程服务"
+	app.Version = Version
+	app.Compiled = t
+	app.Commands = []cli.Command{
+		cmd.CmdParse,
+	}
+	app.Flags = append(app.Flags, []cli.Flag{}...)
+	app.Before = func(*cli.Context) error {
+		setting.NewContext()
+		setting.NewServices()
+		return nil
+	}
+	app.After = func(*cli.Context) error {
+		log.Warn("End time duration: %.4fs", time.Since(t).Seconds())
+		setting.CloseServices()
+		return nil
+	}
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(4, "Failed to run app with %s: %v", os.Args, err)
+	}
 }

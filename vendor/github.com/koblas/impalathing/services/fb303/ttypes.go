@@ -6,6 +6,7 @@ package fb303
 import (
 	"bytes"
 	"fmt"
+
 	"git.apache.org/thrift.git/lib/go/thrift"
 )
 
