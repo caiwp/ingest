@@ -50,6 +50,12 @@
 			"revisionTime": "2016-08-05T00:47:13Z"
 		},
 		{
+			"checksumSHA1": "BIY45G2IVrTttD4Rlk9tHwiIOCM=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "3654d25ec346ee8ce71a68431025458d52a38ac0",
+			"revisionTime": "2016-06-02T00:10:21Z"
+		},
+		{
 			"checksumSHA1": "1BBE89UpNp+qVvrF5oKdRLTaBJc=",
 			"origin": "code.gitea.io/gitea/vendor/github.com/go-xorm/core",
 			"path": "github.com/go-xorm/core",
@@ -117,6 +123,18 @@
 			"revisionTime": "2016-08-02T22:28:42Z"
 		},
 		{
+			"checksumSHA1": "h9uTPDZ9DN83BipwhoKIhNNG1OU=",
+			"path": "github.com/oschwald/geoip2-golang",
+			"revision": "0fd242da7906550802871efe101abfdb1cc550a8",
+			"revisionTime": "2017-03-14T03:15:15Z"
+		},
+		{
+			"checksumSHA1": "rnQM9A55VCOSbv0IOuUn/Yl+IFk=",
+			"path": "github.com/oschwald/maxminddb-golang",
+			"revision": "697da8075d2061aa8ed639346443f5d3e8c80b30",
+			"revisionTime": "2017-02-20T20:13:56Z"
+		},
+		{
 			"checksumSHA1": "WmrPO1ovmQ7t7hs9yZGbr2SAoM4=",
 			"path": "github.com/pierrec/lz4",
 			"revision": ""
@@ -138,6 +156,28 @@
 			"path": "github.com/urfave/cli",
 			"revision": "f1be59ff3d239f0942b201619030d302bce912cc",
 			"revisionTime": "2016-11-19T21:37:11Z"
+		},
+		{
+			"checksumSHA1": "/oZpHfYc+ZgOwYAhlvcMhmETYpw=",
+			"path": "golang.org/x/sys/unix",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "kQB2wRB3twjUp615F6zEwGHjNe0=",
+			"path": "golang.org/x/sys/windows",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "99y5HMpSnbs0LdDxK9Hviim2yGU=",
+			"path": "gopkg.in/asaskevich/govalidator.v4",
+			"revision": "7664702784775e51966f0885f5cd27435916517b",
+			"revisionTime": "2016-05-18T19:07:39Z"
+		},
+		{
+			"checksumSHA1": "Zw1RvHOtMyFhUFDUAGUhiUivuFo=",
+			"path": "gopkg.in/go-ozzo/ozzo-dbx.v1",
+			"revision": "2dd287b3c2d5210d13a719767b81b092957142d0",
+			"revisionTime": "2017-02-14T05:15:30Z"
 		},
 		{
 			"checksumSHA1": "XMbFUjCgOeWPM1znwtcmOUjY7OM=",

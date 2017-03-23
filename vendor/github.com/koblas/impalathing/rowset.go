@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/koblas/impalathing/services/beeswax"
 	impala "github.com/koblas/impalathing/services/impalaservice"
+	"github.com/koblas/impalathing/services/beeswax"
 )
 
 type rowSet struct {
@@ -51,8 +51,8 @@ type Status struct {
 }
 
 func newRowSet(client *impala.ImpalaServiceClient, handle *beeswax.QueryHandle, options Options) RowSet {
-	return &rowSet{client: client, handle: handle, options: options, columnNames: nil, offset: 0, rowSet: nil,
-		hasMore: true, ready: false, metadata: nil, nextRow: nil}
+  return &rowSet{client: client, handle: handle, options: options, columnNames: nil, offset: 0, rowSet: nil, 
+  hasMore: true, ready: false, metadata: nil, nextRow: nil}
 }
 
 //
@@ -138,10 +138,10 @@ func (r *rowSet) Next() bool {
 		}
 
 		if r.metadata == nil {
-			r.metadata, err = r.client.GetResultsMetadata(r.handle)
-			if err != nil {
+		  r.metadata, err = r.client.GetResultsMetadata(r.handle)
+		  if err != nil {
 				log.Printf("GetResultsMetadata failed: %v\n", err)
-			}
+			  }
 		}
 		if len(r.columnNames) == 0 {
 			r.columnNames = resp.Columns
@@ -217,44 +217,45 @@ func (r *rowSet) Scan(dest ...interface{}) error {
 	return nil
 }
 
+
 //Convert from a hive column type to a Go type
 func (r *rowSet) convertRawValue(raw string, hiveType string) (interface{}, error) {
-	switch hiveType {
-	case "string":
-		return raw, nil
-	case "int", "tinyint", "smallint":
-		i, err := strconv.ParseInt(raw, 10, 0)
-		return int32(i), err
-	case "bigint":
-		i, err := strconv.ParseInt(raw, 10, 0)
-		return int64(i), err
-	case "float", "double", "decimal":
-		i, err := strconv.ParseFloat(raw, 64)
-		return i, err
-	case "timestamp":
-		i, err := time.Parse("2006-01-02 15:04:05", raw)
-		return i, err
-	case "boolean":
-		return raw == "true", nil
-	default:
-		return nil, errors.New(fmt.Sprintf("Invalid hive type %v", hiveType))
-	}
+		switch hiveType {
+		case "string":
+			return raw, nil
+		case "int", "tinyint", "smallint":
+			i, err := strconv.ParseInt(raw, 10, 0)
+			return int32(i), err
+		case "bigint":
+			i, err := strconv.ParseInt(raw, 10, 0)
+			return int64(i), err
+		case "float", "double", "decimal":
+		  i, err := strconv.ParseFloat(raw, 64)
+		  return i, err
+		case "timestamp":
+		  i, err := time.Parse("2006-01-02 15:04:05", raw)
+		  return i, err
+		case "boolean":
+		  return raw == "true", nil
+		default:
+			return nil, errors.New(fmt.Sprintf("Invalid hive type %v", hiveType))
+		}
 }
 
-//Fetch all rows and convert to a []map[string]interface{} with
+//Fetch all rows and convert to a []map[string]interface{} with 
 //appropriate type conversion already carried out
-func (r *rowSet) FetchAll() []map[string]interface{} {
-	response := make([]map[string]interface{}, 0)
+func (r *rowSet) FetchAll() ([]map[string]interface{} ) {
+	response := make([]map[string]interface{},0)
 	for r.Next() {
-		row := make(map[string]interface{})
-		for i, val := range r.nextRow {
-			conv, err := r.convertRawValue(val, r.metadata.Schema.FieldSchemas[i].Type)
-			if err != nil {
-				fmt.Printf("%v\n", err)
-			}
-			row[r.metadata.Schema.FieldSchemas[i].Name] = conv
+	  row := make(map[string]interface{})
+	  for i, val := range r.nextRow {
+		conv, err := r.convertRawValue(val, r.metadata.Schema.FieldSchemas[i].Type)
+		if err != nil {
+		  fmt.Printf("%v\n", err)
 		}
-		response = append(response, row)
+		row[r.metadata.Schema.FieldSchemas[i].Name] = conv
+	  }
+	  response = append(response, row)
 	}
 	return response
 }
@@ -270,3 +271,4 @@ func (r *rowSet) Columns() []string {
 
 	return r.columnNames
 }
+

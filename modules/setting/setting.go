@@ -13,12 +13,16 @@ import (
 	"github.com/Unknwon/com"
 	"github.com/koblas/impalathing"
 	"gopkg.in/ini.v1"
+    "gopkg.in/go-ozzo/ozzo-dbx.v1"
+
+    _ "github.com/go-sql-driver/mysql"
 )
 
 var (
 	Cfg *ini.File
 
 	AppPath    string
+    RootPath   string
 	CustomPath string
 	CustomConf string
 
@@ -74,6 +78,7 @@ func NewContext() {
 		}
 	}
 
+    RootPath = workDir
 	CustomPath = workDir + "/custom"
 	CustomConf = CustomPath + "/conf/app.ini"
 
@@ -96,11 +101,13 @@ func NewServices() {
 	newLogService()
 	newKafkaService()
 	newModelService()
+    newDbService()
 	// newImpalaService()
 }
 
 func CloseServices() {
 	closeKafkaService()
+    closeDbService()
 	// closeImpalaService()
 	closeLogService()
 }
@@ -245,9 +252,33 @@ func closeKafkaService() {
 var ModelCategories []string
 
 func newModelService() {
-	categories := strings.Split(Cfg.Section("model").Key("CATEGORY").MustString("login"), ",")
+	categories := strings.Split(Cfg.Section("flume").Key("CATEGORY").MustString("login"), ",")
 
 	for _, v := range categories {
 		ModelCategories = append(ModelCategories, strings.TrimSpace(v))
 	}
+}
+
+var Db *dbx.DB
+
+func newDbService() {
+    sec := Cfg.Section("mysql")
+    user := sec.Key("USER").MustString("root")
+    pass := sec.Key("PASSWORD").MustString("123456")
+    host := sec.Key("HOST").MustString("localhost")
+    port := sec.Key("PORT").MustInt(3306)
+    database := sec.Key("DATABASE").MustString("database")
+
+    var err error
+    Db, err = dbx.MustOpen("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8", user, pass, host, port, database))
+    if err != nil {
+        log.Error(4, "open db failed: %v", err)
+    }
+}
+
+func closeDbService() {
+    err := Db.Close()
+    if err != nil {
+        log.Error(4, "close db failed: %v", err)
+    }
 }

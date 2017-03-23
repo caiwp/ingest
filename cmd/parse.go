@@ -6,9 +6,9 @@ import (
 
 	"code.gitea.io/gitea/modules/log"
 	"github.com/Unknwon/com"
-	"github.com/caiwp/ingest/models"
 	"github.com/caiwp/ingest/modules/setting"
 	"github.com/urfave/cli"
+    "github.com/caiwp/ingest/modules/flume"
 )
 
 var CmdParse = cli.Command{
@@ -31,7 +31,7 @@ func runParse(ctx *cli.Context) error {
 		log.Warn("category %s not found in app.ini", category)
 		return errors.New(fmt.Sprintf("category %s not found in app.ini", category))
 	}
-	err := models.Run(category)
+	err := flume.Run(category)
 	if err != nil {
 		log.Error(4, "Parse %s failed: %v", category, err)
 	}
