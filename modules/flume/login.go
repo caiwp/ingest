@@ -12,9 +12,6 @@ import (
     "bytes"
     "strings"
     "time"
-    "os"
-    "github.com/Unknwon/com"
-    "sync"
     "fmt"
     "github.com/caiwp/ingest/modules/base"
 )
@@ -54,48 +51,31 @@ type LoginModel struct {
     Resolution   string `valid:"-" flume`
 
     SessionId    string `valid:"required" flume`
-
-    lock         sync.Mutex
 }
 
 func NewLoginModel() ModelInterface {
     return new(LoginModel)
 }
 
-func (m *LoginModel) SourcePath() string {
-    return path.Join(setting.SourceDataPath, LOGIN_CATEGORY)
-}
-
 func (m *LoginModel) Parse(content string) {
     var sli []interface{}
     if err := json.Unmarshal([]byte(content), &sli); err != nil {
-        log.Error(4, "json unmarshal %v failed", content)
+        log.Error(4, "Json unmarshal %v failed", content)
     }
 
     initStruct(sli, m)
-    log.Debug("%v", m)
+    log.Info("Parse login success")
 }
 
 func (m *LoginModel) Validate() bool {
-    log.Debug("validate")
-
-    govalidator.TagMap["product"] = govalidator.Validator(isProduct)
-    govalidator.TagMap["platform"] = govalidator.Validator(isPlatform)
-    govalidator.TagMap["channel"] = govalidator.Validator(isChannel)
-    govalidator.TagMap["datetime"] = govalidator.Validator(isDateTime)
-
-    // 内置的 int 不行，使用自定义的
-    govalidator.CustomTypeTagMap.Set("int32Validator", govalidator.CustomTypeValidator(isInt32))
-    govalidator.CustomTypeTagMap.Set("validateGameserver", govalidator.CustomTypeValidator(isGameserver))
-
     res, err := govalidator.ValidateStruct(m)
     if err != nil || res == false {
-        log.Warn("validate error: %v", err)
+        log.Warn("Validate %v error: %v", m, err)
         return false
     }
 
+    log.Info("Validate login success")
     m.setData()
-
     return true
 }
 
@@ -109,7 +89,7 @@ func (m *LoginModel) setData() {
         path := path.Join(setting.RootPath, "conf", "GeoLite2-City.mmdb")
         rg, err := base.GetRegion(m.Ip, path)
         if err != nil {
-            log.Warn("get %s region failed: %v", m.Ip, err)
+            log.Warn("Get %s region failed: %v", m.Ip, err)
         }
         m.Region = rg
     }
@@ -124,8 +104,6 @@ func (m *LoginModel) setData() {
 }
 
 func (m *LoginModel) Send() {
-    log.Debug("send")
-
     var s string
     massage := bytes.NewBufferString(s)
 
@@ -133,43 +111,17 @@ func (m *LoginModel) Send() {
     ms = append(ms, m)
     err := gocsv.MarshalWithoutHeaders(&ms, massage)
     if err != nil {
-        log.Error(4, "csv marshal failed: %v", ms)
+        log.Error(4, "Csv marshal failed: %v", ms)
         return
     }
     if err = kafka.SendMassage(strings.TrimSpace(massage.String()), "test"); err != nil {
-        log.Error(4, "kafka send massage failed: %v", massage)
+        log.Error(4, "Kafka send massage failed: %v", massage)
     }
+    log.Info("Send login success")
 }
 
-func (m *LoginModel) Destroy(path string) {
-    log.Debug("destroy")
-    if com.IsExist(path) {
-        err := os.Remove(path)
-        if err != nil {
-            log.Error(4, "remove file %s failed: %v", path, err)
-        }
-    }
-}
-
-func (m *LoginModel) Backup(s string) {
-    log.Debug("backup %s", s)
-    m.lock.Lock()
-    defer m.lock.Unlock()
-    fileName := time.Now().Format("200601021504")
-    path := path.Join(setting.BackupDataPath, LOGIN_CATEGORY, fileName)
-    file, err := os.OpenFile(path, os.O_WRONLY | os.O_APPEND | os.O_CREATE, 0660)
-    log.Debug("%v", path)
-    if err != nil {
-        log.Error(4, "open file %s failed: %v", path, err)
-        return
-    }
-    defer file.Close()
-
-    _, err = file.WriteString(s + "\n")
-    if err != nil {
-        log.Error(4, "write file %s failed: %v", path, err)
-        return
-    }
+func (m *LoginModel) Category() string {
+    return LOGIN_CATEGORY
 }
 
 func init() {
