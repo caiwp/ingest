@@ -113,7 +113,7 @@ func (m *LoginModel) Send() {
         return
     }
     // FIXME test need to change to its category
-    if err = kafka.SendMassage(strings.TrimSpace(massage.String()), "test"); err != nil {
+    if err = kafka.SendMassage(strings.TrimSpace(massage.String()), "tmp_raw_logins"); err != nil {
         log.Error(4, "Kafka send massage failed: %v", massage)
     }
     log.Info("Send login success")

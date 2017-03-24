@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-var Version = "0.1.0+dev"
+var Version = "1.0.0+dev"
 
 func main() {
 	var t = time.Now()
@@ -23,6 +23,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.CmdParse,
         cmd.CmdLoad,
+        cmd.CmdServ,
 	}
 	app.Flags = append(app.Flags, []cli.Flag{}...)
 	app.Before = func(*cli.Context) error {

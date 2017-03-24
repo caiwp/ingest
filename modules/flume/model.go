@@ -67,7 +67,7 @@ func Run(adapter string) error {
         return nil
     }
 
-    files = files[:1]
+    files = files[:len(files) - 1]
     for _, f := range files {
         if err = parse(f, model); err != nil {
             log.Error(4, "Parse file %v failed: %v", f, err)
