@@ -17,11 +17,12 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "Ingest"
-	app.Usage = "数据流程服务"
+	app.Usage = "File => Kafka => Flume => HDFS => Impala"
 	app.Version = Version
 	app.Compiled = t
 	app.Commands = []cli.Command{
 		cmd.CmdParse,
+        cmd.CmdLoad,
 	}
 	app.Flags = append(app.Flags, []cli.Flag{}...)
 	app.Before = func(*cli.Context) error {

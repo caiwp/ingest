@@ -18,6 +18,10 @@ import (
     _ "github.com/go-sql-driver/mysql"
 )
 
+const (
+    CATEGORY_LOGIN = "login"
+)
+
 var (
 	Cfg *ini.File
 
@@ -35,6 +39,9 @@ var (
 	DataRootPath   string
 	SourceDataPath string
     BackupDataPath string
+
+    // HDFS setttings
+    HDFSPath string
 )
 
 func init() {
@@ -93,8 +100,10 @@ func NewContext() {
 	LogRootPath = Cfg.Section("").Key("ROOT_PATH").MustString(path.Join(workDir, "log"))
 
 	DataRootPath = Cfg.Section("").Key("DATA_PATH").MustString(path.Join(workDir, "data"))
-	SourceDataPath = path.Join(DataRootPath, "source")
-    BackupDataPath = path.Join(DataRootPath, "backup")
+	SourceDataPath = Cfg.Section("").Key("SOURCE_PATH").MustString(path.Join(DataRootPath, "source"))
+    BackupDataPath = Cfg.Section("").Key("BACKUP_PATH").MustString(path.Join(DataRootPath, "backup"))
+
+    HDFSPath = Cfg.Section("").Key("HDFS_PATH").MustString("/user/impala/raw_data")
 }
 
 func NewServices() {
@@ -102,13 +111,13 @@ func NewServices() {
 	newKafkaService()
 	newModelService()
     newDbService()
-	// newImpalaService()
+	newImpalaService()
 }
 
 func CloseServices() {
 	closeKafkaService()
     closeDbService()
-	// closeImpalaService()
+	closeImpalaService()
 	closeLogService()
 }
 

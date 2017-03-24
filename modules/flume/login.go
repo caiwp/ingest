@@ -16,8 +16,6 @@ import (
     "github.com/caiwp/ingest/modules/base"
 )
 
-const LOGIN_CATEGORY = "login"
-
 type LoginModel struct {
     ProductId    int32
     ProductName  string `valid:"required,product" flume`
@@ -114,6 +112,7 @@ func (m *LoginModel) Send() {
         log.Error(4, "Csv marshal failed: %v", ms)
         return
     }
+    // FIXME test need to change to its category
     if err = kafka.SendMassage(strings.TrimSpace(massage.String()), "test"); err != nil {
         log.Error(4, "Kafka send massage failed: %v", massage)
     }
@@ -121,9 +120,9 @@ func (m *LoginModel) Send() {
 }
 
 func (m *LoginModel) Category() string {
-    return LOGIN_CATEGORY
+    return setting.CATEGORY_LOGIN
 }
 
 func init() {
-    Register("login", NewLoginModel)
+    Register(setting.CATEGORY_LOGIN, NewLoginModel)
 }

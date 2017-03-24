@@ -29,11 +29,7 @@ type modelType func() ModelInterface
 var adapters = make(map[string]*Modeler)
 
 func Register(name string, model modelType) {
-    var err error
-    adapters[name], err = newModeler(name, model)
-    if err != nil {
-        log.Error(4, "New model failed: %v", err)
-    }
+    adapters[name] = newModeler(name, model)
 }
 
 type Modeler struct {
@@ -41,13 +37,13 @@ type Modeler struct {
     model   modelType
 }
 
-func newModeler(adapter string, model modelType) (*Modeler, error) {
+func newModeler(adapter string, model modelType) *Modeler {
     m := &Modeler{
         adapter: adapter,
         model:   model,
     }
 
-    return m, nil
+    return m
 }
 
 func Run(adapter string) error {
